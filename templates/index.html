@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Mini Bank</title>
+  </head>
+  <body>
+    <h1>Mini Bank</h1>
+    <h2>Create account</h2>
+    <form action="/create" method="post">
+      <input name="name" placeholder="Name" required>
+      <input name="initial" placeholder="Initial deposit" type="number" step="0.01">
+      <button type="submit">Create</button>
+    </form>
+
+    <h2>Accounts</h2>
+    <ul>
+      {% for a in accounts %}
+        <li><a href="/account/{{ a.id }}">{{ a.id }} - {{ a.name }} — {{ '%.2f'|format(a.balance) }}</a></li>
+      {% else %}
+        <li>No accounts yet</li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>
