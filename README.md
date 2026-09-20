@@ -2,11 +2,12 @@
 
 ![tests](https://github.com/AthishKumar466/Banking-Transaction-Management-System/actions/workflows/tests.yml/badge.svg)
 
-A small banking transaction system (console + Flask web UI) backed by SQLite — account creation, deposits, withdrawals, and transfers, with a transaction ledger per account.
+A small banking transaction system (console + Flask web UI) backed by SQLite — account creation, deposits, withdrawals, and transfers, with a transaction ledger per account. Currency is Indian Rupees (₹), formatted with Indian digit grouping (lakh/crore).
 
 ## Design notes worth knowing
 
-- **Money is stored as integer cents, never floats.** `bank/services.py` converts dollars↔cents at the API boundary, but every arithmetic operation and every DB column is an integer. This avoids the classic floating-point drift bug where thousands of small deposits stop summing to a round number — see `tests/test_services.py::test_no_floating_point_drift_over_many_transactions`.
+- **Money is stored as integer paise, never floats.** `bank/services.py` converts rupees↔paise at the API boundary, but every arithmetic operation and every DB column is an integer. This avoids the classic floating-point drift bug where thousands of small deposits stop summing to a round number — see `tests/test_services.py::test_no_floating_point_drift_over_many_transactions`.
+- **₹ formatting uses real Indian digit grouping, not a symbol swap.** `bank/formatting.py::format_inr` groups the last 3 digits, then pairs from there (`₹12,34,567.89`, `₹1,00,000.00`), not the Western `₹1,234,567.89` — see `tests/test_formatting.py`.
 - **Balance changes are atomic, not check-then-act.** `withdraw`/`transfer` update the balance with a single conditional `UPDATE ... WHERE balance >= ?` and check the affected row count, rather than reading the balance, deciding in Python, then writing — so two concurrent withdrawals against the same account can't both read "sufficient funds" and both succeed, which would be possible with a naive SELECT-then-UPDATE.
 - **A DB-level `CHECK (balance >= 0)` constraint** backs the application logic as a second line of defense.
 - **Both UIs are thin.** `app.py` and `cli.py` only parse input and format output; every validation rule and every DB write lives in `bank/services.py`. Neither UI can bypass a rule the other enforces.
@@ -53,7 +54,7 @@ pip install -r requirements-dev.txt
 pytest
 ```
 
-18 tests covering validation, insufficient-funds handling, transfer atomicity, the floating-point-drift regression, and a CLI-driven regression test for bad input handling. Runs on every push via GitHub Actions (`.github/workflows/tests.yml`).
+29 tests covering validation, insufficient-funds handling, transfer atomicity, the floating-point-drift regression, INR formatting (including lakh/crore grouping and rounding carry), and a CLI-driven regression test for bad input handling. Runs on every push via GitHub Actions (`.github/workflows/tests.yml`).
 
 ## Project structure
 
@@ -65,11 +66,14 @@ pytest
 ├── bank/
 │   ├── db.py                # schema + connection helper
 │   ├── models.py             # Account / Transaction dataclasses
-│   └── services.py            # BankService — all business logic lives here
+│   ├── services.py            # BankService — all business logic lives here
+│   └── formatting.py          # format_inr — ₹ display with Indian digit grouping
 ├── templates/                 # Jinja2 templates for the web UI
 ├── tests/
 │   ├── test_services.py
+│   ├── test_formatting.py
 │   └── test_cli.py
+├── conftest.py                 # empty — makes `bank`/`cli` importable under bare `pytest`
 └── .github/workflows/tests.yml
 ```
 

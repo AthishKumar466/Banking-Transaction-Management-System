@@ -33,7 +33,7 @@
     <h2>Accounts</h2>
     <ul>
       {% for a in accounts %}
-        <li><a href="/account/{{ a.id }}">{{ a.id }} - {{ a.name }} — R$ {{ '%.2f'|format(a.balance) }}</a></li>
+        <li><a href="/account/{{ a.id }}">{{ a.id }} - {{ a.name }} — {{ a.balance|inr }}</a></li>
       {% else %}
         <li>No accounts yet</li>
       {% endfor %}

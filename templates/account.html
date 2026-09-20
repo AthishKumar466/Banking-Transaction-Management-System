@@ -16,7 +16,7 @@
   <body>
     <a href="/">Back</a>
     <h1>{{ account.name }} ({{ account.id }})</h1>
-    <p class="balance">Balance: R$ {{ '%.2f'|format(account.balance) }}</p>
+    <p class="balance">Balance: {{ account.balance|inr }}</p>
 
     {% with messages = get_flashed_messages() %}
       {% if messages %}
@@ -51,7 +51,7 @@
     <h3>Transactions</h3>
     <ul>
       {% for t in transactions %}
-        <li>{{ t.created_at }} | {{ t.type }} | R$ {{ '%.2f'|format(t.amount) }} | cp:{{ t.counterparty or '-' }} | {{ t.note }}</li>
+        <li>{{ t.created_at }} | {{ t.type }} | {{ t.amount|inr }} | cp:{{ t.counterparty or '-' }} | {{ t.note }}</li>
       {% else %}
         <li>No transactions yet</li>
       {% endfor %}

@@ -19,7 +19,7 @@ def test_cli_survives_invalid_input_and_service_errors_without_crashing(monkeypa
     cli.main()  # would raise and fail the test if any of the above crashed the loop
 
     out = capsys.readouterr().out
-    assert 'Created account 1 for Alice with balance 100.0' in out
+    assert 'Created account 1 for Alice with balance ₹100.00' in out
     assert 'Please enter a valid whole number' in out  # the bad account id was caught, not fatal
     assert 'Done' in out  # the deposit after re-entering a valid id succeeded
     assert 'Error: Insufficient funds' in out  # withdraw failure surfaced, didn't crash the CLI

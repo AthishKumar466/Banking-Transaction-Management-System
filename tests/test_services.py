@@ -105,9 +105,9 @@ def test_no_floating_point_drift_over_many_transactions(service):
     acc = service.create_account('Alice', 0)
     for _ in range(1000):
         service.deposit(acc.id, 0.10)
-    # 1000 deposits of 10 cents should be exactly 100.00, not
-    # 99.99999999999 or similar -- this is what storing cents as integers
-    # instead of dollars as floats buys you.
+    # 1000 deposits of 10 paise should be exactly 100.00, not
+    # 99.99999999999 or similar -- this is what storing paise as integers
+    # instead of rupees as floats buys you.
     assert service.get_account(acc.id).balance == 100.0
 
 

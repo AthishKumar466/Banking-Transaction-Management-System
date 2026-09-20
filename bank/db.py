@@ -22,10 +22,10 @@ CREATE TABLE IF NOT EXISTS transactions (
     FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
 );
 '''
-# balance/amount are stored as integer cents, never floating point, so
-# repeated deposits/withdrawals can't accumulate rounding drift the way a
-# REAL currency column does. BankService converts to/from dollars at the
-# API boundary -- callers still pass and receive plain floats.
+# balance/amount are stored as integer paise (1 rupee = 100 paise), never
+# floating point, so repeated deposits/withdrawals can't accumulate rounding
+# drift the way a REAL currency column does. BankService converts to/from
+# rupees at the API boundary -- callers still pass and receive plain floats.
 
 
 def get_conn(db_path='bank.db'):

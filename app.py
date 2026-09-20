@@ -2,9 +2,11 @@ import os
 
 from flask import Flask, render_template, request, redirect, url_for, flash
 from bank.services import BankService
+from bank.formatting import format_inr
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-change-me')
+app.jinja_env.filters['inr'] = format_inr
 service = BankService(os.environ.get('BANK_DB_PATH', 'bank.db'))
 
 

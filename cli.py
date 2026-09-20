@@ -1,4 +1,5 @@
 from bank.services import BankService
+from bank.formatting import format_inr
 
 service = BankService('bank.db')
 
@@ -40,13 +41,13 @@ def main():
                 name = input('Account holder name: ').strip()
                 init = input('Initial deposit (0 if none): ').strip() or '0'
                 acct = service.create_account(name, float(init))
-                print(f'Created account {acct.id} for {acct.name} with balance {acct.balance}')
+                print(f'Created account {acct.id} for {acct.name} with balance {format_inr(acct.balance)}')
             elif cmd == '2':
                 accounts = service.list_accounts()
                 if not accounts:
                     print('No accounts yet')
                 for a in accounts:
-                    print(f"{a.id}: {a.name} — {a.balance:.2f}")
+                    print(f"{a.id}: {a.name} — {format_inr(a.balance)}")
             elif cmd == '3':
                 aid = input_int('Account id: ')
                 amt = input_float('Amount to deposit: ')
@@ -69,7 +70,7 @@ def main():
                 if not txs:
                     print('No transactions yet')
                 for t in txs:
-                    print(f"{t.created_at} | {t.type} | {t.amount:.2f} | cp:{t.counterparty} | {t.note}")
+                    print(f"{t.created_at} | {t.type} | {format_inr(t.amount)} | cp:{t.counterparty} | {t.note}")
             elif cmd == '7':
                 print('Bye')
                 break
