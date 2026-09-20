@@ -3,20 +3,37 @@
   <head>
     <meta charset="utf-8">
     <title>Mini Bank</title>
+    <style>
+      body { font-family: system-ui, sans-serif; max-width: 640px; margin: 2rem auto; padding: 0 1rem; }
+      .flash { background: #fef3cd; border: 1px solid #f5c518; padding: 0.5rem 0.75rem; border-radius: 4px; margin-bottom: 1rem; }
+      ul { list-style: none; padding: 0; }
+      li { padding: 0.4rem 0; border-bottom: 1px solid #eee; }
+      form { margin-bottom: 1rem; }
+      input { margin-right: 0.5rem; padding: 0.3rem; }
+    </style>
   </head>
   <body>
     <h1>Mini Bank</h1>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for m in messages %}
+          <div class="flash">{{ m }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
     <h2>Create account</h2>
     <form action="/create" method="post">
       <input name="name" placeholder="Name" required>
-      <input name="initial" placeholder="Initial deposit" type="number" step="0.01">
+      <input name="initial" placeholder="Initial deposit" type="number" step="0.01" min="0">
       <button type="submit">Create</button>
     </form>
 
     <h2>Accounts</h2>
     <ul>
       {% for a in accounts %}
-        <li><a href="/account/{{ a.id }}">{{ a.id }} - {{ a.name }} — {{ '%.2f'|format(a.balance) }}</a></li>
+        <li><a href="/account/{{ a.id }}">{{ a.id }} - {{ a.name }} — R$ {{ '%.2f'|format(a.balance) }}</a></li>
       {% else %}
         <li>No accounts yet</li>
       {% endfor %}

@@ -3,38 +3,55 @@
   <head>
     <meta charset="utf-8">
     <title>Account {{ account.id }}</title>
+    <style>
+      body { font-family: system-ui, sans-serif; max-width: 640px; margin: 2rem auto; padding: 0 1rem; }
+      .flash { background: #fef3cd; border: 1px solid #f5c518; padding: 0.5rem 0.75rem; border-radius: 4px; margin-bottom: 1rem; }
+      ul { list-style: none; padding: 0; }
+      li { padding: 0.4rem 0; border-bottom: 1px solid #eee; }
+      form { margin-bottom: 1rem; }
+      input { margin-right: 0.5rem; padding: 0.3rem; }
+      .balance { font-size: 1.4rem; font-weight: bold; }
+    </style>
   </head>
   <body>
     <a href="/">Back</a>
     <h1>{{ account.name }} ({{ account.id }})</h1>
-    <p>Balance: {{ '%.2f'|format(account.balance) }}</p>
+    <p class="balance">Balance: R$ {{ '%.2f'|format(account.balance) }}</p>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for m in messages %}
+          <div class="flash">{{ m }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
 
     <h3>Deposit</h3>
     <form action="/deposit" method="post">
       <input type="hidden" name="account_id" value="{{ account.id }}">
-      <input name="amount" type="number" step="0.01">
+      <input name="amount" type="number" step="0.01" min="0.01" required>
       <button>Deposit</button>
     </form>
 
     <h3>Withdraw</h3>
     <form action="/withdraw" method="post">
       <input type="hidden" name="account_id" value="{{ account.id }}">
-      <input name="amount" type="number" step="0.01">
+      <input name="amount" type="number" step="0.01" min="0.01" required>
       <button>Withdraw</button>
     </form>
 
     <h3>Transfer</h3>
     <form action="/transfer" method="post">
       <input type="hidden" name="from_id" value="{{ account.id }}">
-      <input name="to_id" placeholder="To account id">
-      <input name="amount" type="number" step="0.01">
+      <input name="to_id" placeholder="To account id" type="number" required>
+      <input name="amount" type="number" step="0.01" min="0.01" required>
       <button>Transfer</button>
     </form>
 
     <h3>Transactions</h3>
     <ul>
       {% for t in transactions %}
-        <li>{{ t.created_at }} | {{ t.type }} | {{ '%.2f'|format(t.amount) }} | cp:{{ t.counterparty }} | {{ t.note }}</li>
+        <li>{{ t.created_at }} | {{ t.type }} | R$ {{ '%.2f'|format(t.amount) }} | cp:{{ t.counterparty or '-' }} | {{ t.note }}</li>
       {% else %}
         <li>No transactions yet</li>
       {% endfor %}
